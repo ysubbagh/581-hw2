@@ -6,19 +6,20 @@ Write csv file and do visualizaation in cytoscape
 import numpy as np
 import pandas as pd
 import networkx as nx
+import os
 
 #ingredient and compound information
-comp = pd.read_csv('data/comp_info.tsv',index_col=0,sep='\t')
-ingr_comp = pd.read_csv('data/ingr_comp.tsv',sep='\t')
-ingr = pd.read_csv('data/ingr_info.tsv',index_col=0,sep='\t')
+comp = pd.read_csv('Flavor-Network-master/data/comp_info.tsv',index_col=0,sep='\t')
+ingr_comp = pd.read_csv('Flavor-Network-master/data/ingr_comp.tsv',sep='\t')
+ingr = pd.read_csv('Flavor-Network-master/data/ingr_info.tsv',index_col=0,sep='\t')
 #edge between ingredients
-df = pd.read_csv('data/srep00196-s2.csv',skiprows=4,header=None)
+df = pd.read_csv('Flavor-Network-master/data/srep00196-s2.csv',skiprows=4,header=None)
 df.columns = ['ingr1','ingr2','shared']
 #merge with 'ingr' to get category information
 df_category = pd.merge(df,ingr, left_on='ingr1', right_on='ingredient name').drop('ingredient name',axis=1)
 
 #create ingredient lists from recipes
-recipe = pd.read_csv('data/srep00196-s3.csv',skiprows=3,sep='\t')
+recipe = pd.read_csv('Flavor-Network-master/data/srep00196-s3.csv',skiprows=3,sep='\t')
 recipe.columns=['recipes']
 #create ingredients column with the first label for cuisine
 recipe['ingredients'] = recipe['recipes'].apply(lambda x: x.split(',')[1:])
@@ -81,5 +82,5 @@ ingr_count = pd.merge(ingr,recipe_count5,on='ingredient name')
 
 df_backbone = pd.merge(df_weights,ingr_count, left_on=0, right_on='ingredient name').drop('ingredient name',axis=1)
 
-df_backbone.to_csv('data/backbone.csv',index=False)
+df_backbone.to_csv('Flavor-Network-master/data/backbone.csv',index=False)
 #use this csv in cytoscape to make the final graph

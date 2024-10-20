@@ -1,0 +1,10 @@
+numpy<1.25.0
+pandas<2.0.0
+matplotlib
+seaborn
+scipy
+scikit-learn
+bokeh<3.1.1
+nltk==3.8.1 # run nltk.download() and install these packages: wordnet, punkt
+networkx
+requests

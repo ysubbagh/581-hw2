@@ -4,15 +4,17 @@ Plot with bokeh interactive plotting
 '''
 
 import numpy as np
-import pandas as pd
+import pandas as pdgit
 import matplotlib.pyplot as plt
-%matplotlib inline
+# %matplotlib inline
 import seaborn as sns
 from scipy.spatial.distance import pdist, squareform
 from sklearn.manifold import MDS, TSNE
 
 from bokeh.plotting import figure, output_file, show, ColumnDataSource
 from bokeh.models import HoverTool
+import nltk
+nltk.download()
 
 #take some regional cuisines, tsne clustering, and plotting
 def tsne_cluster_cuisine(df,sublist):
@@ -24,7 +26,7 @@ def tsne_cluster_cuisine(df,sublist):
         df_sub = pd.concat([df_sub, temp],axis=0,ignore_index=True)
         lenlist.append(df_sub.shape[0])
     df_X = df_sub.drop(['cuisine','recipeName'],axis=1)
-    print df_X.shape, lenlist
+    print(df_X.shape, lenlist)
 
     dist = squareform(pdist(df_X, metric='cosine'))
     tsne = TSNE(metric='precomputed').fit_transform(dist)
@@ -46,7 +48,7 @@ def plot_bokeh(df,sublist,filename):
         df_sub = pd.concat([df_sub, temp],axis=0,ignore_index=True)
         lenlist.append(df_sub.shape[0])
     df_X = df_sub.drop(['cuisine','recipeName'],axis=1)
-    print df_X.shape, lenlist
+    print(df_X.shape, lenlist)
 
     dist = squareform(pdist(df_X, metric='cosine'))
     tsne = TSNE(metric='precomputed').fit_transform(dist)
@@ -76,9 +78,9 @@ def plot_bokeh(df,sublist,filename):
 
 
 if __name__ == '__main__':
-    yum_ingr = pd.read_pickle('data/yummly_ingr.pkl')
-    yum_ingrX = pd.read_pickle('data/yummly_ingrX.pkl')
-    yum_tfidf = pd.read_pickle('data/yum_tfidf.pkl')
+    yum_ingr = pd.read_pickle('Flavor-Network-master/data/yummly_ingr.pkl')
+    yum_ingrX = pd.read_pickle('Flavor-Network-master/data/yummly_ingrX.pkl')
+    yum_tfidf = pd.read_pickle('Flavor-Network-master/data/yum_tfidf.pkl')
 
     #select four cuisines and plot tsne clustering with ingredients
     sublist = ['Italian','French','Japanese','Indian']

@@ -4,7 +4,7 @@ Plot with bokeh interactive plotting
 '''
 
 import numpy as np
-import pandas as pdgit
+import pandas as pd
 import matplotlib.pyplot as plt
 # %matplotlib inline
 import seaborn as sns
@@ -14,6 +14,7 @@ from sklearn.manifold import MDS, TSNE
 from bokeh.plotting import figure, output_file, show, ColumnDataSource
 from bokeh.models import HoverTool
 import nltk
+nltk.data.path.append('/Users/yasminesubbagh/nltk_data')
 nltk.download()
 
 #take some regional cuisines, tsne clustering, and plotting

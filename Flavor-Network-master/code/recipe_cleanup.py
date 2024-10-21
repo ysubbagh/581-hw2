@@ -6,13 +6,16 @@ Pickle the dataframe projected into the ingredient space in the flavor network a
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-%matplotlib inline
+#%matplotlib inline
 import seaborn as sns
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import SnowballStemmer
 from nltk.tokenize import word_tokenize
 import re
-import cPickle as pickle
+try:
+  import cPickle as pickle
+except:
+  import pickle
 import itertools
 from collections import Counter
 
@@ -62,8 +65,8 @@ def cleanup_ingredients(ingr,df,col):
 
     df_dic = tweak_dic(df_dic, diff_dic)
     diff_dic = df_ingr - set(df_dic.keys())
-    print 'length of ingredients, matched ingredients, missed ingredients'
-    print len(df_ingr), len(df_dic.keys()), len(diff_dic)
+    print('length of ingredients, matched ingredients, missed ingredients')
+    print(len(df_ingr), len(df_dic.keys()), len(diff_dic))
 
     df2 = df.copy()
     df2['len_diff'] = df2[col].apply(lambda x: count_missing(x,df_dic))
@@ -71,8 +74,8 @@ def cleanup_ingredients(ingr,df,col):
     df2['len_match'] = df2['match ingredients'].apply(lambda x: len(x))
     #remove entries with less match ingredients or no matching ingr_ingredients
     df3 = df2[(df2['len_diff']<3) & (df2['len_match']!=0)]
-    print 'dataframe shape before and after filtering'
-    print df2.shape, df3.shape
+    print('dataframe shape before and after filtering')
+    print(df2.shape, df3.shape)
 
     #sort ingredients set for later matching to flavor
     match_ingr = set()
@@ -168,7 +171,7 @@ def flavor_profile(df,ingr,comp,ingr_comp):
     for item in sorted_ingredients:
         underscore_ingredients.append(item.replace(' ','_'))
 
-    print len(underscore_ingredients), len(sorted_ingredients)
+    print(len(underscore_ingredients), len(sorted_ingredients))
 
     ingr_total = ingr_comp.join(ingr,how='right',on='# ingredient id')
     ingr_total = ingr_total.join(comp,how='right',on='compound id')
@@ -177,7 +180,7 @@ def flavor_profile(df,ingr,comp,ingr_comp):
     ingr_flavor = ingr_pivot[ingr_pivot.index.isin(underscore_ingredients)]
 
     df_flavor = df.values.dot(ingr_flavor.values)
-    print df.shape, df_flavor.shape
+    print(df.shape, df_flavor.shape)
 
     return df_flavor
 
@@ -198,12 +201,12 @@ def make_tfidf(arr):
     from sklearn.preprocessing import normalize
     tfidf = np.multiply(arr2_norm, arr2_idf)
     tfidf = normalize(tfidf, norm='l2', axis=1)
-    print tfidf.shape
+    print(tfidf.shape)
     return tfidf
 
 
 if __name__ == '__main__':
-    yum = pd.read_pickle('data/yummly.pkl')
+    yum = pd.read_pickle('Flavor-Network-master/data/yummly.pkl')
     #drop duplicates
     yum = yum.drop_duplicates(['id'], keep='first')
     #drop low ratings
@@ -229,7 +232,7 @@ if __name__ == '__main__':
      'American, Cajun & Creole':'American',
      'American, Cajun & Creole, Southern & Soul Food': 'American',
      'Irish, American':'American'
-        }
+    }
 
     yum['cuisine'] = yum['cuisine'].apply(lambda x: cuisine_dic[x] if x in cuisine_dic else x)
     #remove some cusines with few dishes
@@ -238,30 +241,30 @@ if __name__ == '__main__':
     #clean up ingredients and create list
     yum['clean ingredients'] = yum['ingredients'].apply(lambda x: split_ingr(x))
     yum['clean ingredients'] = yum['clean ingredients'].apply(lambda x:[remove_word(word) for word in x])
-    yum.to_pickle('data/yummly_clean.pkl')
+    yum.to_pickle('Flavor-Network-master/data/yummly_clean.pkl')
 
     #make list and set for all ingredients
     yum_lst = list(itertools.chain(*(yum['clean ingredients'].tolist())))
     yum_ingr = set(yum_lst)
-    print len(yum_lst), len(yum_ingr)
+    print(len(yum_lst), len(yum_ingr))
 
     #load ingr and comp information for the flavor network
-    comp = pd.read_csv('data/comp_info.tsv',index_col=0,sep='\t')
-    ingr_comp = pd.read_csv('data/ingr_comp.tsv',sep='\t')
-    ingr = pd.read_csv('data/ingr_info.tsv',index_col=0,sep='\t')
+    comp = pd.read_csv('Flavor-Network-master/data/comp_info.tsv',index_col=0,sep='\t')
+    ingr_comp = pd.read_csv('Flavor-Network-master/data/ingr_comp.tsv',sep='\t')
+    ingr = pd.read_csv('Flavor-Network-master/data/ingr_info.tsv',index_col=0,sep='\t')
     ingr['space ingredients']= ingr['ingredient name'].apply(lambda x: x.replace('_',' ') )
     ingr_ingredients = set()
     ingr['space ingredients'].map(lambda x: ingr_ingredients.add(x))
-    print len(ingr_ingredients)
+    print(len(ingr_ingredients))
     #clean up ingredients and get two dataframes
     yum_ingr, yum_X = cleanup_ingredients(ingr_ingredients, yum, 'clean ingredients')
     #pickle the dataframe yum_ingr and yum_X
-    yum_ingr.to_pickle('data/yummly_ingr.pkl')
-    yum_X.to_pickle('data/yummly_ingrX.pkl')
+    yum_ingr.to_pickle('Flavor-Network-master/data/yummly_ingr.pkl')
+    yum_X.to_pickle('Flavor-Network-master/data/yummly_ingrX.pkl')
     #get flavor profile
     yum_flavor = flavor_profile(yum_X, ingr, comp, ingr_comp)
     #make tfidf from flavor profile
     yum_tfidf = make_tfidf(yum_flavor)
     #pickle numpy array as dataframes
-    pd.DataFrame(yum_flavor).to_pickle('data/yum_flavor.pkl')
-    pd.DataFrame(yum_tfidf).to_pickle('data/yum_tfidf.pkl')
+    pd.DataFrame(yum_flavor).to_pickle('Flavor-Network-master/data/yum_flavor.pkl')
+    pd.DataFrame(yum_tfidf).to_pickle('Flavor-Network-master/data/yum_tfidf.pkl')

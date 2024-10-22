@@ -133,13 +133,13 @@ if __name__ == '__main__':
     all_cuisines = yum_ingr['cuisine'].unique() 
 
     # Use all cuisines for ingredient clustering
-    df_ingr = yum_ingrX.copy()
+    df_ingr = yum_ingrX.copy() # the ingrredient files
     df_ingr['cuisine'] = yum_ingr['cuisine']
     df_ingr['recipeName'] = yum_ingr['recipeName']
     tsne_cluster_cuisine(df_ingr, all_cuisines)
 
     # Use all cuisines for flavor clustering
-    df_flavor = yum_tfidf.copy()
+    df_flavor = yum_tfidf.copy() # the taste / flavor file (dataset)
     df_flavor['cuisine'] = yum_ingr['cuisine']
     df_flavor['recipeName'] = yum_ingr['recipeName']
     tsne_cluster_cuisine(df_flavor, all_cuisines)
